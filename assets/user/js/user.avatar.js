@@ -35,6 +35,7 @@ $(function () {
             .attr('src', newImgURL)  // 重新设置图片路径
             .cropper(options)        // 重新初始化裁剪区域
     });
+    
     $("#makeSure").click(function (e) {
         e.preventDefault();
         //3. 将裁剪后的图片，输出为 base64 格式的字符串
