@@ -125,17 +125,29 @@ $(function () {
 
         //在展示弹出层之后，根据 id 的值发起请求获取文章分类的数据，并填充到表单中
         var id = $(this).attr("data-id")
-        // var current = null
         // $.ajax({
         //     type: "GET",
         //     url: "/my/article/list",
         //     data: data,
         //     success: function (value) {
-        //         console.log(value.data[0].cate_name);
-        //         return current = value.data[0].cate_name
+        //         $.ajax({
+        //             type: "GET",
+        //             url: "/my/article/" + id,
+        //             success: function (res) {
+        //                 if (res.status !== 0) {
+        //                     return layui.layer.msg(res.message)
+        //                 }
+        //                 res.data.cate_id = value.data[0].cate_name
+        //                 //这个把cate_id变成cate_name
+        //                 layui.form.val("article_form", res.data)
+        //                 var str = template("initCate", res)
+        //                 $("[name=cate_id]").html(str)
+        //                 // 通过 layui 重新渲染表单区域的UI结构--因为这个option是后面通过请求添加过来的，当页面走完并不能获取到，所以我们需要用个layui.form.render()方法重新渲染一次
+        //                 layui.form.render()
+        //             }
+        //         });
         //     }
         // });
-        // console.log(current);
 
         $.ajax({
             type: "GET",
@@ -144,22 +156,21 @@ $(function () {
                 if (res.status !== 0) {
                     return layui.layer.msg(res.message)
                 }
-                //res.data.Id = cate_id
-                //res.data.cate_id = cate_id
-                console.log(res.data.cate_id);
-
-                // console.log(res.data.cate_id);
-                //这个把cate_id变成cate_name
-                console.log(res);
-
-                layui.form.val("article_form", res.data)
-                var str = template("initCate", res)
-                $("[name=cate_id]").html(str)
-                // 通过 layui 重新渲染表单区域的UI结构--因为这个option是后面通过请求添加过来的，当页面走完并不能获取到，所以我们需要用个layui.form.render()方法重新渲染一次
-                layui.form.render()
+                $.ajax({
+                    type: "GET",
+                    url: "/my/article/list",
+                    data: data,
+                    success: function (value) {
+                        res.data.cate_id = value.data[0].cate_name
+                        layui.form.val("article_form", res.data)
+                        var str = template("initCate", res)
+                        $("[name=cate_id]").html(str)
+                        // 通过 layui 重新渲染表单区域的UI结构--因为这个option是后面通过请求添加过来的，当页面走完并不能获取到，所以我们需要用个layui.form.render()方法重新渲染一次
+                        layui.form.render()
+                    }
+                });
             }
         });
-
 
         //点击上传默认点击文件
         $("#uploading").click(function (e) {
