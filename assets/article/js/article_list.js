@@ -40,7 +40,6 @@ $(function () {
     //获取所有分类的下拉选项框请求
     initCate()
     function initCate() {
-
         $.ajax({
             type: "GET",
             url: "/my/article/cates",
@@ -55,7 +54,6 @@ $(function () {
             }
         });
     }
-
     //实现筛选的功能 -- 核心就在于监听提交事件，把我们最开始定义的参数data里面的cate_id和state重新赋值，再重新渲染该页面就好了！
     $("#form-search").submit(function (e) {
         e.preventDefault()
@@ -98,7 +96,7 @@ $(function () {
 
 
 
-    //实现编辑功能
+    //实现编辑功能---这个是额外自己写的！！
 
     //表单里面触发编辑点击事件
     var close1 = null
@@ -127,6 +125,18 @@ $(function () {
 
         //在展示弹出层之后，根据 id 的值发起请求获取文章分类的数据，并填充到表单中
         var id = $(this).attr("data-id")
+        // var current = null
+        // $.ajax({
+        //     type: "GET",
+        //     url: "/my/article/list",
+        //     data: data,
+        //     success: function (value) {
+        //         console.log(value.data[0].cate_name);
+        //         return current = value.data[0].cate_name
+        //     }
+        // });
+        // console.log(current);
+
         $.ajax({
             type: "GET",
             url: "/my/article/" + id,
@@ -134,9 +144,19 @@ $(function () {
                 if (res.status !== 0) {
                     return layui.layer.msg(res.message)
                 }
-                layui.form.val("dialog_edit", res.data)
+                //res.data.Id = cate_id
+                //res.data.cate_id = cate_id
+                console.log(res.data.cate_id);
+
+                // console.log(res.data.cate_id);
+                //这个把cate_id变成cate_name
+                console.log(res);
+
+                layui.form.val("article_form", res.data)
                 var str = template("initCate", res)
                 $("[name=cate_id]").html(str)
+                // 通过 layui 重新渲染表单区域的UI结构--因为这个option是后面通过请求添加过来的，当页面走完并不能获取到，所以我们需要用个layui.form.render()方法重新渲染一次
+                layui.form.render()
             }
         });
 
@@ -165,7 +185,7 @@ $(function () {
 
         //定义文章的发布状态
         var art_state = "已发布"
-        $("#btnSave2").click(function name(params) {
+        $("#btnSave2").click(function () {
             art_state = "草稿"
         })
 
