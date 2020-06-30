@@ -47,7 +47,6 @@ $(function () {
                 layui.form.val("dialog_edit", res.data)
             }
         });
-
     })
     //监听修改弹出层提交事件，然后修改
     $("body").on("submit", "#form_edit", function (e) {

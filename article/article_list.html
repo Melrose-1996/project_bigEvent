@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
     <!-- 导入自己的样式 -->
     <link rel="stylesheet" href="../assets/article/css/article_list.css">
+    <!-- 导入剪切图片的样式 -->
+    <link rel="stylesheet" href="/assets/lib/cropper/cropper.css" />
 </head>
 
 <body>
@@ -54,40 +56,111 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- 开始使用模板引擎 -->
-                    <script type="text/html" id="article_list">
-                        {{each data}}
-                        <tr>
-                            <td>{{$value.title}}</td>
-                            <td>{{$value.cate_name}}</td>
-                            <td>{{$value.pub_date|dataFormat}}</td>
-                            <td>{{$value.state}}</td>
-                            <td>
-                                <button type="button" class="layui-btn layui-btn-xs" id="article_edit" data-id={{$value.Id}}>编辑</button>
-                                <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" id="article_del">删除</button>
-                            </td>
-                        </tr>
-                        {{/each}}
-                    </script>
+
                 </tbody>
             </table>
             <!-- 分页区域 -->
+            <div id="pageBox"></div>
         </div>
     </div>
+
     <script type="text/html" id="initCate">
         <option value="">所有分类</option>
         {{each data}}
         <option value= "{{$value.Id}}">{{$value.name}}</option>
         {{/each}}
     </script>
-    <!-- 导入LayUI的JS -->
-    <script src="../assets/lib/layui/layui.all.js"></script>
+    <!-- 开始使用模板引擎 -->
+    <script type="text/html" id="article_list">
+        {{each data}}
+        <tr>
+            <td>{{$value.title}}</td>
+            <td>{{$value.cate_name}}</td>
+            <td>{{$value.pub_date|changtime}}</td>
+            <td>{{$value.state}}</td>
+            <td>
+                <button type="button" class="layui-btn layui-btn-xs" id="article_edit" data-id={{$value.Id}}>编辑</button>
+                <button type="button" class="layui-btn layui-btn-danger layui-btn-xs" id="article_del">删除</button>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <!-- 利用类模板引擎来将弹出层中渲染编辑表单 -->
+    <script type="text/html" id="dialog_edit">
+        <form class="layui-form" id="makeSure" lay-filter="dialog_edit">
+            <!-- 隐藏域放置ID -->
+            <input type="hidden" name="Id">
+            <!-- 文章标题 -->
+            <div class="layui-form-item">
+                <label class="layui-form-label">文章标题</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" required lay-verify="required" placeholder="请输入文章标题"
+                        autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <!-- 文章类别 -->
+            <div class="layui-form-item">
+                <label class="layui-form-label">文章类别</label>
+                <div class="layui-input-block">
+                    <input type="text" name="cate_id" required lay-verify="required" placeholder="请输入文章类别"
+                        autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <!-- 富文本框 -->
+            <div class="layui-form-item">
+                <!-- 左侧的 label -->
+                <label class="layui-form-label">文章内容</label>
+                <!-- 为富文本编辑器外部的容器设置高度 -->
+                <div class="layui-input-block" style="height: 400px;">
+                    <!-- 重要：将来这个 textarea 会被初始化为富文本编辑器 -->
+                    <textarea name="content"></textarea>
+                </div>
+            </div>
+            <!-- 剪切图片 -->
+            <div class="layui-form-item">
+                <!-- 左侧的 label -->
+                <label class="layui-form-label">文章封面</label>
+                <!-- 选择封面区域 -->
+                <div class="layui-input-block cover-box">
+                    <!-- 左侧裁剪区域 -->
+                    <div class="cover-left">
+                        <img id="image" src="/assets/images/sample2.jpg" alt="" />
+                    </div>
+                    <!-- 右侧预览区域和选择封面区域 -->
+                    <div class="cover-right">
+                        <!-- 预览的区域 -->
+                        <div class="img-preview"></div>
+                        <!-- 选择封面按钮 -->
+                        <input type="file" id="file" accept="image/png,image/jpeg" style="display: none;" />
+                        <button type="button" class="layui-btn layui-btn-danger" id="uploading">选择封面</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 渲染提交按钮 -->
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit>发布</button>
+                    <button class="layui-btn layui-btn-primary" lay-submit id="btnSave2">存为草稿</button>
+                </div>
+            </div>
+        </form>
+    </script>
+
     <!-- 导入Jquery的js -->
     <script src="../assets/lib/jquery.js"></script>
-    <!-- 导入自己封装的baseAPI.js -->
-    <script src="../assets/js/baseAPI.js"></script>
+    <!-- 导入LayUI的JS -->
+    <script src="../assets/lib/layui/layui.all.js"></script>
+    <!-- 导入富文本的js -->
+    <script src="/assets/lib/tinymce/tinymce.min.js"></script>
+    <script src="/assets/lib/tinymce/tinymce_setup.js"></script>
+    <!-- 导入剪切图片的js -->
+    <script src="/assets/lib/jquery.js"></script>
+    <script src="/assets/lib/cropper/Cropper.js"></script>
+    <script src="/assets/lib/cropper/jquery-cropper.js"></script>
     <!-- 开始引入模板引擎 -->
     <script src="../assets/lib/template-web.js"></script>
+    <!-- 导入自己封装的baseAPI.js -->
+    <script src="../assets/js/baseAPI.js"></script>
     <!-- 导入自己的js -->
     <script src="../assets/article/js/article_list.js"></script>
 </body>
