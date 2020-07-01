@@ -67,10 +67,9 @@ $(function () {
 
     //定义文章的发布状态
     var art_state = "已发布"
-    $("#btnSave2").click(function name(params) {
+    $("#btnSave2").click(function () {
         art_state = "草稿"
     })
-
     //开始发布文章！
     $("#makeSure").submit(function (e) {
         e.preventDefault();
@@ -103,34 +102,12 @@ $(function () {
                         }
                         console.log(res);
                         layer.msg(res.message)
-                        location.href = '/article/article_list.html'
+                        //location.href = '/article/article_list.html'
+                        //window.parent.$("#articleListBtn").click()
+                        window.parent.$("#articleListBtn")[0].click()
                     }
                 });
             })
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 })
 
